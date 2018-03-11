@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/HomeItem" android:title="Home" android:icon="@drawable/homeicon"></item>
+    <item android:id="@+id/ProfileSettingItem" android:title="Profile Setting" android:icon="@drawable/setprofile"></item>
+    <item android:id="@+id/ChangePasswordItem" android:title="Change Password" android:icon="@drawable/password"></item>
+    <item android:id="@+id/HistorylogItem" android:title="History Log" android:icon="@drawable/history"></item>
+    <item android:id="@+id/LogoutItem" android:title="Logout" android:icon="@drawable/logouticon"></item>
+
+</menu>

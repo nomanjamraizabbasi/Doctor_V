@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient"
+    tools:context="com.example.mjamraizabbasi.doctorvinterfaces.signInActivity">
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="183dp"
+        android:layout_height="145dp"
+        android:layout_marginTop="60dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/doctorlogo1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintLeft_creator="1" />
+
+    <EditText
+        android:id="@+id/username_login_ET"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="76dp"
+        android:background="@drawable/textfieldbackground"
+        android:drawableLeft="@drawable/user16"
+        android:drawablePadding="10dp"
+        android:ems="15"
+        android:fontFamily="sans-serif"
+        android:hint="Username"
+        android:inputType="text"
+        android:paddingBottom="20dp"
+        android:textColor="@android:color/white"
+        android:textColorHint="@android:color/white"
+        android:textSize="15sp"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/logo" />
+
+    <EditText
+        android:id="@+id/password_login_ET"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/textfieldbackground"
+        android:drawableLeft="@drawable/padlock16"
+        android:drawablePadding="10dp"
+        android:ems="15"
+        android:fontFamily="sans-serif"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:paddingBottom="20dp"
+        android:textColor="@android:color/white"
+        android:textColorHint="@android:color/white"
+        android:textSize="15sp"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintLeft_toLeftOf="@+id/username_login_ET"
+        app:layout_constraintRight_toRightOf="@+id/username_login_ET"
+        app:layout_constraintTop_toBottomOf="@+id/username_login_ET" />
+
+    <Button
+        android:id="@+id/loginBtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="38dp"
+        android:background="@drawable/loginbtnbg"
+        android:fontFamily="sans-serif"
+        android:text="Sign in"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toLeftOf="@+id/password_login_ET"
+        app:layout_constraintRight_toRightOf="@+id/password_login_ET"
+        app:layout_constraintTop_toBottomOf="@+id/password_login_ET"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintHorizontal_bias="0.0" />
+
+    <TextView
+        android:id="@+id/forgotPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="11dp"
+        android:text="Forgot Password?"
+        android:textColor="@android:color/white"
+        android:fontFamily="sans-serif"
+        android:clickable="true"
+        android:autoLink="all"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintLeft_toLeftOf="@+id/loginBtn"
+        app:layout_constraintRight_toRightOf="@+id/loginBtn"
+        app:layout_constraintTop_toBottomOf="@+id/loginBtn"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintLeft_creator="1" />
+
+</android.support.constraint.ConstraintLayout>
