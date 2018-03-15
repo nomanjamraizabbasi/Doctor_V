@@ -4,9 +4,10 @@
     package="com.example.mjamraizabbasi.doctorvinterfaces">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <uses-feature android:name="android.hardware.camera2" />
 
     <application
@@ -19,27 +20,30 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".signInActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar"></activity>
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name=".singupActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar"></activity>
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity android:name=".launcherscreenActivity">
+
+        </activity>
+        <activity android:name=".signupActivity1" />
+        <activity android:name=".signupActivity2" />
+        <activity android:name=".homepageActivity" />
+        <activity android:name=".reportAnalysisActivity" />
+        <activity android:name=".xrayAnalysisActivity" />
+        <activity android:name=".setProfileActivity" />
+        <activity android:name=".changePasswordActivity" />
+        <activity android:name=".diagnosisAcivity" />
+        <activity android:name=".historylogActivity" />
+        <activity android:name=".loggedOutDiagnosis" />
+        <activity android:name=".OCR">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".signupActivity1"></activity>
-        <activity android:name=".signupActivity2" />
-        <activity android:name=".homepageActivity"></activity>
-        <activity android:name=".reportAnalysisActivity"></activity>
-        <activity android:name=".xrayAnalysisActivity" />
-        <activity android:name=".setProfileActivity"></activity>
-        <activity android:name=".changePasswordActivity" />
-        <activity android:name=".diagnosisAcivity"></activity>
-        <activity android:name=".historylogActivity"></activity>
-        <activity android:name=".loggedOutDiagnosis"></activity>
     </application>
 
 </manifest>

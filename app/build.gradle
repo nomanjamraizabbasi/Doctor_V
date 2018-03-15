@@ -21,7 +21,7 @@ android {
 
 dependencies {
     implementation project(":Doctor-V-debug")
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation(name: 'speech-android-wrapper', ext: 'aar')
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -33,10 +33,13 @@ dependencies {
     implementation 'com.android.support:design:26.+'
     implementation 'com.android.volley:volley:1.0.0'
     implementation 'com.ibm.watson.developer_cloud:java-sdk:4.1.0'
+    implementation 'com.google.api-client:google-api-client-android:1.22.0'
+    implementation 'com.google.apis:google-api-services-vision:v1-rev357-1.22.0'
+    implementation 'com.google.code.findbugs:jsr305:2.0.1'
     testImplementation 'junit:junit:4.12'
 }
-repositories{
-    flatDir{
+repositories {
+    flatDir {
         dirs 'libs'
     }
 }
