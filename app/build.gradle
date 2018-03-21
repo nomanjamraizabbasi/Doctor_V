@@ -20,8 +20,8 @@ android {
 }
 
 dependencies {
-    implementation project(":Doctor-V-debug")
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':Doctor-V-debug')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation(name: 'speech-android-wrapper', ext: 'aar')
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -34,9 +34,10 @@ dependencies {
     implementation 'com.android.volley:volley:1.0.0'
     implementation 'com.ibm.watson.developer_cloud:java-sdk:4.1.0'
     testImplementation 'junit:junit:4.12'
+    implementation project(':openCVLibrary340')
 }
-repositories{
-    flatDir{
+repositories {
+    flatDir {
         dirs 'libs'
     }
 }

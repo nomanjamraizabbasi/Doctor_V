@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/Doctor-V-debug/Doctor-V-debug.iml" filepath="$PROJECT_DIR$/Doctor-V-debug/Doctor-V-debug.iml" />
       <module fileurl="file://$PROJECT_DIR$/DoctorVInterfaces_with_all_db_work.iml" filepath="$PROJECT_DIR$/DoctorVInterfaces_with_all_db_work.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/openCVLibrary340/openCVLibrary340.iml" filepath="$PROJECT_DIR$/openCVLibrary340/openCVLibrary340.iml" />
     </modules>
   </component>
 </project>

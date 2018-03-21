@@ -81,12 +81,72 @@ public class signInActivity extends Activity {
                             } else {
                                 Toast.makeText(signInActivity.this, "Password Incorrect", Toast.LENGTH_SHORT).show();
                             }
-                        } else {
-                            Toast.makeText(signInActivity.this, "Incorrect Username", Toast.LENGTH_SHORT).show();
+                        }
+                        //if username doesnt exist in sqlite
+                        else {
+                            //Toast.makeText(signInActivity.this, "Incorrect Username", Toast.LENGTH_SHORT).show();
+                            //Check if mysql contains the username
+                            StringRequest stringRequest = new StringRequest(Request.Method.POST, server_url, new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response) {
+                                    //Toast.makeText(signInActivity.this, "after responce", Toast.LENGTH_SHORT).show();
+                                    try {
+                                        JSONArray jsonArray = new JSONArray(response);
+                                        JSONObject jsonObject = jsonArray.getJSONObject(0);
+                                        String code = jsonObject.getString("code");
+
+                                        //if mysql also doesnt have the username and user password
+                                        if (code.equals("login_failed")) {
+                                            Toast.makeText(signInActivity.this, "Wrong User Details", Toast.LENGTH_SHORT).show();
+                                        }
+                                        //if mysql contains the username
+                                        else {
+                                            //insert the username and password in the sqlite
+                                            userDbHelper= new UserDbHelper(context);
+                                            sqLiteDatabase= userDbHelper.getWritableDatabase();
+                                            userDbHelper.add_newuser(uname,pass,sqLiteDatabase);
+                                            Intent homescreen = new Intent(view.getContext(), homepageActivity.class);
+                                            startActivity(homescreen);
+                                        }
+//
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                }
+                            }, new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+
+                                    Toast.makeText(signInActivity.this, "Check Your Internet Connection", Toast.LENGTH_SHORT).show();
+                                }
+                            }) {
+
+                                @Override
+                                protected Map<String, String> getParams() throws AuthFailureError {
+                                    Map<String, String> params = new HashMap<String, String>();
+                                    params.put("username", uname);
+                                    params.put("password", pass);
+
+                                    //Toast.makeText(signInActivity.this, "In getParams", Toast.LENGTH_SHORT).show();
+                                    return params;
+
+                                }
+
+                            };
+                            MySingleton.getInstance(signInActivity.this).addToRequestQueue(stringRequest);
+
                         }
 
 
                     }
+
+                }
+
+                //If fields are not validated
+                else {
+                    Toast.makeText(signInActivity.this, "Input Username/Password", Toast.LENGTH_SHORT).show();
+                }
 
 
 //                    StringRequest stringRequest = new StringRequest(Request.Method.POST, server_url, new Response.Listener<String>() {
@@ -139,7 +199,6 @@ public class signInActivity extends Activity {
 ////                    Toast.makeText(signInActivity.this, "Input Username/Password", Toast.LENGTH_SHORT).show();
 ////                }
                 }
-            }
         });
     }
 //        });
