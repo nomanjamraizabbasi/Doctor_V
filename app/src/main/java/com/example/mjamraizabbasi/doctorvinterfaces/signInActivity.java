@@ -69,8 +69,10 @@ public class signInActivity extends Activity {
                     sqLiteDatabase = userDbHelper.getReadableDatabase();
                     Cursor cursor = userDbHelper.checkLoginDetails(uname, sqLiteDatabase);
 
+                    //If username exists in the sqlite db
                     if (cursor != null) {
                         //Log.e("Value of get count: ", Integer.toString(cursor.getCount()));
+                        //if username is found in sqlite
                         if (cursor.moveToFirst()) {
                             String returnedPassword = cursor.getString(cursor.getColumnIndex("password"));
 
@@ -85,7 +87,7 @@ public class signInActivity extends Activity {
                         //if username doesnt exist in sqlite
                         else {
                             //Toast.makeText(signInActivity.this, "Incorrect Username", Toast.LENGTH_SHORT).show();
-                            //Check if mysql contains the username
+                           //Check if mysql contains the username
                             StringRequest stringRequest = new StringRequest(Request.Method.POST, server_url, new Response.Listener<String>() {
                                 @Override
                                 public void onResponse(String response) {
@@ -145,8 +147,9 @@ public class signInActivity extends Activity {
 
                 //If fields are not validated
                 else {
-                    Toast.makeText(signInActivity.this, "Input Username/Password", Toast.LENGTH_SHORT).show();
-                }
+                        Toast.makeText(signInActivity.this, "Input Username/Password", Toast.LENGTH_SHORT).show();
+                    }
+
 
 
 //                    StringRequest stringRequest = new StringRequest(Request.Method.POST, server_url, new Response.Listener<String>() {
@@ -198,7 +201,8 @@ public class signInActivity extends Activity {
 ////            else {
 ////                    Toast.makeText(signInActivity.this, "Input Username/Password", Toast.LENGTH_SHORT).show();
 ////                }
-                }
+
+            }
         });
     }
 //        });
