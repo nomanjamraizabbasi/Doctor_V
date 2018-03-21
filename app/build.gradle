@@ -10,6 +10,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -20,7 +21,8 @@ android {
 }
 
 dependencies {
-    implementation project(":Doctor-V-debug")
+    implementation 'com.android.support:multidex:1.0.3'
+    implementation project(':Doctor-V-debug')
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation(name: 'speech-android-wrapper', ext: 'aar')
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
@@ -37,6 +39,7 @@ dependencies {
     implementation 'com.google.apis:google-api-services-vision:v1-rev357-1.22.0'
     implementation 'com.google.code.findbugs:jsr305:2.0.1'
     testImplementation 'junit:junit:4.12'
+    implementation project(':openCVLibrary341')
 }
 repositories {
     flatDir {
