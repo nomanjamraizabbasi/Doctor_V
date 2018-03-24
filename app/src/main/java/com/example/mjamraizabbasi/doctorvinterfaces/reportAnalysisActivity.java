@@ -55,6 +55,7 @@ import com.google.api.services.vision.v1.model.Word;
 import org.apache.commons.io.IOUtils;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
 import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
@@ -81,13 +82,8 @@ public class reportAnalysisActivity extends AppCompatActivity implements Navigat
     static final int CAM_REQUEST = 1;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle actionBarDrawerToggle;
-    String server_url= "http://doctorv.000webhostapp.com/connect/save_medicaldata.php";
-    String username, currentDate;
-    Boolean done=false;
+    String username;
     NavigationView navigationView;
-    Context context=this;
-    UserDbHelper userDbHelper;
-    SQLiteDatabase sqLiteDatabase;
     Button analyze_button;
     ImageButton input_button;
     ImageView image_view;
@@ -104,8 +100,7 @@ public class reportAnalysisActivity extends AppCompatActivity implements Navigat
     CharSequence[] values = {" Male "," Female "};
     Vision vision;
     String gender="";
-    String evaluation;
-
+    Boolean done=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,71 +113,53 @@ public class reportAnalysisActivity extends AppCompatActivity implements Navigat
         input_button = (ImageButton) findViewById(R.id.uploadImageBtn);
         image_view = (ImageView) findViewById(R.id.view2);
         analyze_button = (Button) findViewById(R.id.analyzeReportBtn);
+
         //ANALYSIS PART
         analyze_button.setEnabled(false);
         analyze_button.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                analyze_button.setEnabled(false);
-                                input_button.setEnabled(false);
+            public void onClick(final View view) {
+
+                    Thread thread = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    analyze_button.setEnabled(false);
+                                    input_button.setEnabled(false);
+                                }
+                            });
+                            try {
+                                InputStream inputStream;
+                                //this will automatically handle image from camera/gallery based on "cam_flag"
+                                if (cam_flag) //usage of cam_flag
+                                    inputStream = new FileInputStream(Environment.getExternalStorageDirectory().getPath() + "/image.jpg");
+                                else
+                                    inputStream = getContentResolver().openInputStream(image_uri); //the image you have to play with now is inputStream
+
+                                //OCR WORK
+                                Vision.Builder visionBuilder = new Vision.Builder(
+                                        new NetHttpTransport(),
+                                        new AndroidJsonFactory(),
+                                        null);
+
+
+                                visionBuilder.setVisionRequestInitializer(new VisionRequestInitializer("AIzaSyDnTlB2Lt4YDMAY06rcyNyRJuYcxM7GfKA"));
+                                vision = visionBuilder.build();
+
+                                //Call to analysis part
+                                analyze_Report(inputStream, view);
+
+                            } catch (Exception e) {
+
                             }
-                        });
-                        try {
-                            InputStream inputStream;
-                            //this will automatically handle image from camera/gallery based on "cam_flag"
-                            if (cam_flag) //usage of cam_flag
-                                inputStream = new FileInputStream(Environment.getExternalStorageDirectory().getPath() + "/image.jpg");
-                            else
-                                inputStream = getContentResolver().openInputStream(image_uri);
-                            //the image you have to play with now is inputStream
-
                         }
-                        catch(Exception e){
+                    });
+                    thread.run();
 
-                        }
-                    }
-                });
-                thread.run();
-                //OCR WORK
-                Vision.Builder visionBuilder = new Vision.Builder(
-                        new NetHttpTransport(),
-                        new AndroidJsonFactory(),
-                        null);
+                }
 
-
-//                //OCR PREPROCESSING FOR FAREHA'S MODULE
-//                try{
-//                    Mat src = Utils.loadResource(reportAnalysisActivity.this, R.drawable.bloodf, Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE);
-//                    boolean ans = src.isContinuous();
-//                    //1. Resizing
-//                    double ratio = (double)src.width()/src.height();
-//                    if(src.width()>768){
-//                        int newHeight = (int)(768/ratio);
-//                        Imgproc.resize(src,src,new Size(768,newHeight ));
-//                    }
-//                    else if(src.height()>1024){
-//                        int newWidth = (int)(1024*ratio);
-//                        Imgproc.resize(src,src,new Size(newWidth,1024));
-//                    }
-//
-//                    //2. denoising
-//                    Photo.fastNlMeansDenoising(src,src,10,7,21);
-//                }
-//                catch(Exception e){}
-
-
-                //not
-                visionBuilder.setVisionRequestInitializer(new VisionRequestInitializer("AIzaSyDnTlB2Lt4YDMAY06rcyNyRJuYcxM7GfKA"));
-                vision = visionBuilder.build();
-
-                analyze_Report();
-            }
         });
 
         //INPUT IMAGE PART
@@ -217,6 +194,8 @@ public class reportAnalysisActivity extends AppCompatActivity implements Navigat
 
 
         drawerLayout= (DrawerLayout)findViewById(R.id.drawerid);
+
+        //nav bar open and close
         actionBarDrawerToggle= new ActionBarDrawerToggle(this,drawerLayout,R.string.open, R.string.close);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
@@ -228,63 +207,13 @@ public class reportAnalysisActivity extends AppCompatActivity implements Navigat
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        //Get Username from the login activity
-//        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-//        username = preferences.getString("username", "defaultValue");
 
-        //save the analysis result in the medical log
-//        done=true;
-//        if(done) {
-//            //get system date
-//            Calendar calendar= Calendar.getInstance();
-//            currentDate = DateFormat.getDateInstance().format(new Date());
-//
-//            //Save data in sqlite table
-//            userDbHelper= new UserDbHelper(context);
-//            sqLiteDatabase= userDbHelper.getWritableDatabase();
-//            userDbHelper.add_newrecord(username,currentDate,"Reports Analysis","abcgsh",sqLiteDatabase);
-//
-//            //Save data in mysql db
-//            StringRequest stringRequest = new StringRequest(Request.Method.POST, server_url, new Response.Listener<String>() {
-//                @Override
-//                public void onResponse(final String response) {
-//
-//                    if (response.equals("inserted")) {
-//                        Toast.makeText(reportAnalysisActivity.this, "Data saved", Toast.LENGTH_SHORT).show();
-//                    } else {
-//                        Toast.makeText(reportAnalysisActivity.this, "Data not saved", Toast.LENGTH_SHORT).show();
-//                    }
-//
-//                }
-//
-//            }, new Response.ErrorListener() {
-//                @Override
-//                public void onErrorResponse(VolleyError error) {
-//                    Toast.makeText(reportAnalysisActivity.this, "Error", Toast.LENGTH_SHORT);
-//                }
-//            }) {
-//
-//                @Override
-//                protected Map<String, String> getParams() throws AuthFailureError {
-//
-//                    Map<String, String> params = new HashMap<String, String>();
-//                    params.put("username", username);
-//                    params.put("date", currentDate);
-//                    params.put("type", "Report Analysis");
-//                    params.put("details", "zxcvbbnm");
-//
-//                    return params;
-//
-//                }
-//            };
-//            MySingleton.getInstance(reportAnalysisActivity.this).addToRequestQueue(stringRequest);
-//        }
 
 
     }
 
-    public void analyze_Report(){
-        CreateAlertDialogWithRadioButtonGroup() ;
+    public void analyze_Report(final InputStream inputStream, final View view){
+      //  CreateAlertDialogWithRadioButtonGroup() ;
         testnameBlocks_coords = new ArrayList<Vertex>(); //Contains block/s that have test names
         testvaluesBlocks_coords = new ArrayList<Integer>(); //COntains block/s that have values
         testnames = new ArrayList<String>();
@@ -296,10 +225,38 @@ public class reportAnalysisActivity extends AppCompatActivity implements Navigat
             @Override
             public void run() {
                 // Convert photo to byte array
-                InputStream inputStream = getResources().openRawResource(R.raw.bloodetwo);
                 try {
                     byte[] photoData = IOUtils.toByteArray(inputStream);
                     inputStream.close();
+                    //Mat src = Imgcodecs.imdecode(new MatOfByte(photoData), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
+//                    photoData = new byte[(int) (src.total() *  src.channels())];
+//                    src.get(0, 0, photoData);
+
+
+
+//                    //OCR PREPROCESSING FOR FAREHA'S MODULE
+//                    try{
+////                                Mat src = Utils.loadResource(reportAnalysisActivity.this, R.drawable.bloodf, Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE);
+//                        //boolean ans = src.isContinuous();
+//                        //1. Resizing
+//                        double ratio = (double)src.width()/src.height();
+//                        if(src.width()>768){
+//                            int newHeight = (int)(768/ratio);
+//                            Imgproc.resize(src,src,new Size(768,newHeight ));
+//                        }
+//                        else if(src.height()>1024){
+//                            int newWidth = (int)(1024*ratio);
+//                            Imgproc.resize(src,src,new Size(newWidth,1024));
+//                        }
+//
+//                        //2. denoising
+//                        Photo.fastNlMeansDenoising(src,src,10,7,21);
+//                    }
+//                    catch(Exception e){}
+//
+//                    photoData = new byte[(int) (src.total() *  src.channels())];
+//                    src.get(0, 0, photoData);
+//
                     Image inputImage = new Image();
                     inputImage.encodeContent(photoData);
 
@@ -340,16 +297,14 @@ public class reportAnalysisActivity extends AppCompatActivity implements Navigat
                                             || c_word.equals("LYM") || c_word.equals("LYM#") || c_word.equals("LYM%") || c_word.contains("Lym")
                                             || c_word.equals("NEUT#") || c_word.contains("NUET%") || c_word.equals("NEUT") || c_word.contains("Neut")
                                             || c_word.contains("Monocytes") || c_word.contains("Eosinophils")
-                                            || c_word.equals("Mixed Cells") ||c_word.equals("Basophils") ||c_word.equals("Bands") || c_word.equals("00")) {
+                                            || c_word.equals("Mixed Cells") ||c_word.equals("Basophils") ||c_word.equals("Bands") ||
+                                            c_word.contains("Bilirubin") || c_word.equals("ALT") || c_word.equals("SGPT") || c_word.equals("ALK-Phos") || c_word.contains("Alk")
+                                            || c_word.equals("ALK")) {
 
                                         //Store the y coords of blocks containing testnames in array if not already saved
                                         if (testnameBlocks_coords.isEmpty() || !testnameBlocks_coords.contains(block_coords.get(block_number)))
                                             testnameBlocks_coords.add(block_coords.get(block_number));
-                                        current_block = block_number;
-                                        if(c_word.equals("00"))
-                                            System.out.print(current_block);
                                     }
-
                                 }
                             }
                         }
@@ -362,7 +317,7 @@ public class reportAnalysisActivity extends AppCompatActivity implements Navigat
                         public int compare(Vertex x1, Vertex x2) {
                             int result= Integer.compare(x1.getY(), x2.getY());
                             if(result==0){
-                                //boh ys are equal so we compare the x
+                                //both ys are equal so we compare the x
                                 result=Integer.compare(x1.getX(), x2.getX());
                             }
                             return result;
@@ -400,7 +355,9 @@ public class reportAnalysisActivity extends AppCompatActivity implements Navigat
                                         || name.equals("LYM") || name.equals("LYM#") || name.equals("LYM%") || name.contains("Lym")
                                         || name.equals("NEUT#") || name.contains("NUET%") || name.equals("NEUT") || name.contains("Neut")
                                         || name.contains("Monocytes") || name.contains("Eosinophils")
-                                        || name.equals("Mixed Cells") ||name.equals("Basophils") ||name.equals("Bands"))
+                                        || name.equals("Mixed Cells") ||name.equals("Basophils") ||name.equals("Bands") ||
+                                        name.contains("Bilirubin") || name.equals("ALT") || name.equals("SGPT") || name.equals("ALK-Phos") || name.contains("Alk.")
+                                        || name.equals("ALK"))
                                     testnames.add(name);
 
                             }
@@ -479,7 +436,6 @@ public class reportAnalysisActivity extends AppCompatActivity implements Navigat
                                     //ignore indices that have been selected no matter if they had the values or not
                                     if(!ignoreIndex.contains(result_block_index))
                                         ignoreIndex.add(result_block_index);
-                                    //break;
                                 }
 
 
@@ -525,170 +481,49 @@ public class reportAnalysisActivity extends AppCompatActivity implements Navigat
                                 catch(NumberFormatException n){
 
                                 }
-//                                //save the testnames in testnames array
-//                                testValues.add(Float.parseFloat(value_string));
                             }
 
                         }
                     }
-//                    if(testnames.size()<testValues.size() || testnames.size()>testValues.size()){
-//                        Toast.makeText(OCR.this, "Error In Analyzing the file, Try again", Toast.LENGTH_LONG).show();
-//                    }
-//                    else {
+
                     for (int a = 0; a < testnames.size(); a++) {
                         Log.e(testnames.get(a), Float.toString(testValues.get(a)));
                     }
-                    evaluateBloodReport();
-//                    }
 
+                    //Convert the testname and testvalues array to string so they can be passed on
+                    StringBuilder sb = new StringBuilder();
+                    StringBuilder sb2 = new StringBuilder();
+                    for (int i = 0; i < testnames.size(); i++) {
+                        sb.append(testnames.get(i)).append(",");
+                        sb2.append(testValues.get(i)).append(",");
+
+                    }
+
+                    //Save the values and testnames so they can be passed on to next activity
+                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(reportAnalysisActivity.this);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putString("testnames", sb.toString());
+                    editor.putString("testvalues", sb2.toString());
+                    editor.putString("gender", gender);
+                    editor.apply();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent reportresultScreen = new Intent(view.getContext(), reportResult_Activity.class);
+                            startActivity(reportresultScreen);
+                        }
+                    });
                 }
                 catch (IOException e) {
                     e.printStackTrace();
                 }
+                done=true;
             }
+
         });
 
     }
 
-    public void evaluateBloodReport(){
-
-        //loop through testvalues to see which one is above below or in the range of normal values
-        for(int j=0; j<testnames.size();j++){
-            Boolean Normal=false;
-            float currentValue=0;
-
-            if(gender.equals("female")) {
-                evaluation = "";
-
-                if (testnames.get(j).contains("RBC")) {
-                    //value of RBC
-                    currentValue = testValues.get(j);
-
-                    if (currentValue < 4.2) {
-                        evaluation = evaluation + "Your RBC is below the normal range of 4.2 - 5.4 mill/mL.\n \n"
-                                + getString(R.string.low_RBC_Symptoms) + "\n" + getText(R.string.low_RBC_Reasons);
-                    } else if (currentValue > 5.4) {
-                        evaluation = evaluation + "Your RBC is above the normal range of 4.2 - 5.4 mill/mL.\n \n"
-                                + getString(R.string.high_RBC_Symptoms) + "\n" + getText(R.string.high_RBC_Reasons);
-                    } else {
-                        evaluation = evaluation + " Your RBC value is in normal range of 4.2 - 5.4 mill/mL.\n \n";
-                        System.out.println(evaluation);
-                        Normal = true;
-                    }
-                }
-
-                else if (testnames.get(j).equals("Hb") || testnames.get(j).equals("Hemoglobin")
-                        || testnames.get(j).equals("HB")) {
-                    //value of HB
-                    currentValue = testValues.get(j);
-
-                    if (currentValue < 12.0) {
-                        evaluation = evaluation + "Your Hemoglobin is below the normal range of 4.2 - 5.4 g/dL.\n \n"
-                                + getString(R.string.low_RBC_Symptoms) + "\n" + getText(R.string.low_RBC_Reasons);
-                    } else if (currentValue > 15.0) {
-                        evaluation = evaluation + "Your Hemoglobin is above the normal range of 4.2 - 5.4 g/dL.\n \n"
-                                + getString(R.string.high_RBC_Symptoms) + "\n" + getText(R.string.high_RBC_Reasons);
-                    } else {
-                        evaluation = evaluation + " Your Hemoglobin value is in normal range of 4.2 - 5.4 g/dL.\n \n";
-                        System.out.println(evaluation);
-                        Normal = true;
-                    }
-                }
-            }
-
-            else if(gender.equals("male")){
-
-                if (testnames.get(j).contains("RBC")) {
-                    //value of RBC
-                    currentValue = testValues.get(j);
-                    if(currentValue<4.6)
-                    {
-                        evaluation= evaluation+ "Your RBC is below the normal range of 4.6 - 6.1 mill/mL.\n \n"
-                                + getString(R.string.low_RBC_Symptoms)+"\n"+ getText(R.string.low_RBC_Reasons);
-                    }
-                    else if(currentValue>6.1){
-                        evaluation= evaluation+ "Your RBC is above the normal range of 4.6 - 6.1 mill/mL.\n \n"
-                                + getString(R.string.high_RBC_Symptoms)+ "\n"+ getText(R.string.high_RBC_Reasons);
-                    }
-                    else{
-                        evaluation= evaluation+ " Your RBC value is in normal range of 4.6 - 6.1 mill/mL.\n \n";
-                        System.out.println(evaluation);
-                        Normal=true;
-                    }
-
-                }
-
-                else if (testnames.get(j).equals("Hb") || testnames.get(j).equals("Hemoglobin")
-                        || testnames.get(j).equals("HB")) {
-                    //value of HB
-                    currentValue = testValues.get(j);
-
-                    if (currentValue < 14.0) {
-                        evaluation = evaluation + "Your Hemoglobin is below the normal range of 14 - 17 g/dL \n\n"
-                                + getString(R.string.low_HB_Symptoms) + "\n" + getString(R.string.low_HB_Reasons);
-                    } else if (currentValue > 17.0) {
-                        evaluation = evaluation + "Your Hemoglobin is above the normal range of 14 - 17 g/dL. \n\n"
-                                + getString(R.string.high_HB_Symptoms) + "\n" + getString(R.string.high_HB_Reasons);
-                    } else {
-                        evaluation = evaluation + " Your Hemoglobin value is in normal range of 14 - 17 g/dL. \n\n";
-                        System.out.println(evaluation);
-                        Normal = true;
-                    }
-                }
-
-            }
-
-            //Check WBC value
-            if(testnames.get(j).contains("WBC")){
-                currentValue= testValues.get(j);
-                if(currentValue<4500.0){
-                    evaluation = evaluation + "Your WBCs is below the normal range of 4500 - 10000 c/mL. \n\n"
-                            + getString(R.string.low_WBC_Symptoms) + "\n" + getString(R.string.low_WBC_Reasons);
-                }
-                else if(currentValue>10000.0){
-                    evaluation = evaluation + "Your WBC is above the normal range of 4500 - 10000 c/mL. \n\n"
-                            + getString(R.string.high_WBC_Symptoms) + "\n" + getString(R.string.high_WBC_Reasons);
-                }
-                else{
-                    evaluation = evaluation + " Your WBCs value is in normal range of 4500 - 10000 c/mL. \n\n";
-                    System.out.println(evaluation);
-                    Normal = true;
-                }
-            }
-
-            //Check Platelets value
-            if(testnames.get(j).contains("Platelet")){
-                currentValue= testValues.get(j);
-                if(currentValue<150000.0){
-                    evaluation = evaluation + "Your Platelet Count is below the normal range of 150000 - 450000 platelets/mL. \n"
-                            + getString(R.string.low_Platelets_Symptoms) + "\n" + getString(R.string.low_Platelets_Reasons);
-                }
-                else if(currentValue>450000.0){
-                    evaluation = evaluation + "Your Platelet Count is above the normal range of 150000 - 450000 platelets/mL. \n"
-                            + getString(R.string.high_Platelets_Symptoms) + "\n" + getString(R.string.high_Platelets_Reasons);
-                }
-                else{
-                    evaluation = evaluation + " Your Platelet Count value is in normal range of 150000 - 450000 platelets/mL. \n";
-                    System.out.println(evaluation);
-                    Normal = true;
-                }
-            }
-
-            //Check ESR value
-            if(testnames.get(j).equals("ESR")){
-                currentValue= testValues.get(j);
-                if(currentValue>20.0){
-                    evaluation = evaluation + "Your ESR is above the normal range of 0-20 mm/hour. \n"
-                            + getString(R.string.high_ESR_Symptoms) + "\n" + getString(R.string.high_ESR_Reasons);
-                }
-                else{
-                    evaluation = evaluation + " Your ESRs value is in normal range of 0-20 mm/hour. \n";
-                    System.out.println(evaluation);
-                    Normal = true;
-                }
-            }
-        }
-    }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(resultCode == RESULT_OK){
@@ -713,6 +548,7 @@ public class reportAnalysisActivity extends AppCompatActivity implements Navigat
             try{
                 Bitmap image = BitmapFactory.decodeStream(imagestream);
                 image_view.setImageBitmap(image);
+                CreateAlertDialogWithRadioButtonGroup() ;
             }
             catch(Exception e){
                 Toast.makeText(this,"Internal Error, Try Again",Toast.LENGTH_SHORT);
@@ -788,11 +624,11 @@ public class reportAnalysisActivity extends AppCompatActivity implements Navigat
                 {
                     case 0:
                         gender= "male";
-                        Toast.makeText(reportAnalysisActivity.this, "Male", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(reportAnalysisActivity.this, "Male", Toast.LENGTH_LONG).show();
                         break;
                     case 1:
                         gender="female";
-                        Toast.makeText(reportAnalysisActivity.this, "Female", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(reportAnalysisActivity.this, "Female", Toast.LENGTH_LONG).show();
                         break;
                 }
                 alertDialog1.dismiss();

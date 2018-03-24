@@ -112,10 +112,6 @@ public class historylogActivity extends AppCompatActivity implements NavigationV
         });
 
 
-
-
-
-
     }
 
     @Override
@@ -146,7 +142,7 @@ public class historylogActivity extends AppCompatActivity implements NavigationV
                 while (cursor.moveToNext());
 
             }
-            historyListviewAdapter adapter = new historyListviewAdapter(historylogActivity.this, list);
+            historyListviewAdapter adapter = new historyListviewAdapter(historylogActivity.this, list, context);
             listView.setAdapter(adapter);
         }
 
@@ -164,7 +160,7 @@ public class historylogActivity extends AppCompatActivity implements NavigationV
                 }
                 while (cursor.moveToNext());
             }
-            historyListviewAdapter adapter = new historyListviewAdapter(historylogActivity.this, list);
+            historyListviewAdapter adapter = new historyListviewAdapter(historylogActivity.this, list, context);
             listView.setAdapter(adapter);
         }
 
