@@ -1,2 +1,2 @@
 include ':app', ':Doctor-V-debug'
-include ':openCVLibrary341'
+include ':openCVLibrary340'

@@ -33,7 +33,7 @@
             android:layout_marginStart="40dp"
             android:layout_marginTop="30dp"
             android:background="@drawable/analysis_screenbackground"
-            app:layout_constraintBottom_toTopOf="@+id/analyzeXrayBtn"
+            app:layout_constraintBottom_toTopOf="@+id/doneBtn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -72,7 +72,7 @@
 
 
         <Button
-            android:id="@+id/analyzeXrayBtn"
+            android:id="@+id/doneBtn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="36dp"
